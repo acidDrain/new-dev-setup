@@ -7,5 +7,7 @@ Configuration scripts to bootstrap a new developer machine
 Start with cloning the repository, then run the setup script:
 
 ```sh
+cd new-dev-setup
+chmod +x new-dev-setup.sh
 ./new-dev-setup.sh
 ```
