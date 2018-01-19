@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export VGPORT=8080
 export REPOADDR="github.com"
@@ -171,6 +171,33 @@ if !(which -s npm)
     exit;;
   esac
 fi
+
+echo $COLORLINE
+echo -e "[38;5;226mInstall build-tools? [y/N][0m" BUILDTOOLS
+case ${BUILDTOOLS:0:1} in
+    y|Y )
+        echo $COLORLINE
+        echo -e "[38;5;226mInstalling build tools[0m"
+        brew install readline redis rlwrap tmux tree rtmpdump wget xz yarn glib emacs jq dos2unix autoconf automake c-ares cairo clasp clingo cmake coreutils cpprestsdk gnupg gnutls go gcc@6 libarchive libass libassuan libbluray libbs2b libcaca libebml libepoxy libev libevent libffi libgcrypt libgpg-error libgsm libidn2 libksba libmagic libmatroska libmodplug libmpc libogg libpng libsamplerate libsndfile libsoxr libssh libtasn1 libtiff libtool libunistring libusb libvidstab libvorbis libvpx libyaml little-cms little-cms2 lua
+    ;;
+    * ) echo -e "[38;5;226mNot installing build tools[0m"
+esac
+
+echo $COLORLINE
+echo -e "[38;5;226mInstall media tools? [y/N][0m" MEDIATOOLS
+case ${MEDIATOOLS:0:1} in
+    y|Y )
+        echo $COLORLINE
+        echo -e "[38;5;226mInstalling media tools[0m"
+        brew install x264 x265 xvid wavpack faac fdk-aac ffmpeg flac lame jpeg openh264 openjpeg mkvtomp4 mkvtoolnix mpfr
+    ;;
+    * ) echo -e "[38;5;226mNot installing media tools[0m"
+esac
+
+echo $COLORLINE
+echo -e "[38;5;226mInstall media tools? [y/N][0m" AWSTOOLS
+echo -e "[38;5;226mInstalling aws tools[0m"
+brew install awscli juju juju-wait kompose kops kubernetes-cli kubernetes-helm terraform
 
 echo $COLORLINE
 echo -e "[1;49;32mScript complete![0m"

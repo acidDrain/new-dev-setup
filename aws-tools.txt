@@ -1,0 +1,1 @@
+awscli juju juju-wait kompose kops kubernetes-cli kubernetes-helm terraform
