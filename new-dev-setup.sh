@@ -159,7 +159,7 @@ fi
 
 if !(which -s npm)
   then
-  echo -e "[38;5;226mNo nodejs/npm executables found - would you like to install it via brew? (May take a while) [y/N][0m" NPMINST
+  read -n 1 -p "[38;5;226mNo nodejs/npm executables found - would you like to install it via brew? (May take a while) [y/N][0m" NPMINST
   case ${NPMINST:0:1} in
     y|Y )
       echo $COLORLINE
@@ -175,7 +175,7 @@ fi
 if !(which -s automake)
     then
     echo $COLORLINE
-    echo -e "[38;5;226mInstall build-tools? [y/N][0m" BUILDTOOLS
+    read -n 1 -p "[38;5;226mInstall build-tools? [y/N][0m" BUILDTOOLS
     case ${BUILDTOOLS:0:1} in
         y|Y )
             echo $COLORLINE
@@ -190,7 +190,7 @@ fi
 if !(which -s ffmpeg)
     then
     echo $COLORLINE
-    echo -e "[38;5;226mInstall media tools? [y/N][0m" MEDIATOOLS
+    read -n 1 -p "[38;5;226mInstall media tools? [y/N][0m" MEDIATOOLS
     case ${MEDIATOOLS:0:1} in
         y|Y )
             echo $COLORLINE
