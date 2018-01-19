@@ -24,16 +24,16 @@ fi
 # The private key is always greater than 1k, public key is less than 1k.
 if grep -q $REPOADDR $HOME/.ssh/config
   then
-    bitbucket_key=`grep $REPOADDR $HOME/.ssh/config -A1 | tail -n1 | awk '{print $2}'`
-    echo -e "[38;5;114mFound bitbucket key in $HOME/.ssh/config[0m"
+    github_key=`grep $REPOADDR $HOME/.ssh/config -A1 | tail -n1 | awk '{print $2}'`
+    echo -e "[38;5;114mFound github key in $HOME/.ssh/config[0m"
     if !(ssh-add -l | awk '{print $3}' | grep -q -e "[a-z|A-Z]")
       then
-      echo -e "[38;5;226m$bitbucket_key missing from ssh-agent, adding[0m"
-      ssh-add $bitbucket_key
+      echo -e "[38;5;226m$github_key missing from ssh-agent, adding[0m"
+      ssh-add $github_key
       echo $COLORLINE
     fi
   else
-    echo -e "[38;5;226mNo bitbucket keys found in $HOME/.ssh, would you like to specify a key or have this script generate one for you to use? [y/N][0m\n1 - Specify key
+    echo -e "[38;5;226mNo github keys found in $HOME/.ssh, would you like to specify a key or have this script generate one for you to use? [y/N][0m\n1 - Specify key
     \n2 - Generate keys
     \n3 - Exit"
     read -n 1 -s keyopt
@@ -44,7 +44,7 @@ if grep -q $REPOADDR $HOME/.ssh/config
           if [ -a $customKey ]
             then
           echo "$customKey missing from ssh-agent, adding"
-          echo -e "\n# BitBucket Identity\nHost 10.100.4.52\nHostName git.github.com\nIdentityFile $customKey" >> $HOME/.ssh/config
+          echo -e "\n# github Identity\nHost 10.100.4.52\nHostName git.github.com\nIdentityFile $customKey" >> $HOME/.ssh/config
           ssh-add $customKey
           echo $COLORLINE
         else
@@ -53,18 +53,18 @@ if grep -q $REPOADDR $HOME/.ssh/config
         fi
         ;;
         2 )
-          bitbucket_key=$HOME/.ssh/bitbucket_key.$RT
-          echo -e "\n\nGenerating ${bitbucket_key} and ${bitbucket_key}.pub and placing in $HOME/.ssh"
-          ssh-keygen -q -t rsa -f $bitbucket_key -P ""
-          echo "Adding $bitbucket_key to ~/.ssh/config for git.github.com"
-          echo -e "\n# BitBucket Identity\nHost 10.100.4.52\nHostName git.github.com\nIdentityFile $bitbucket_key" >> $HOME/.ssh/config
+          github_key=$HOME/.ssh/github_key.$RT
+          echo -e "\n\nGenerating ${github_key} and ${github_key}.pub and placing in $HOME/.ssh"
+          ssh-keygen -q -t rsa -f $github_key -P ""
+          echo "Adding $github_key to ~/.ssh/config for git.github.com"
+          echo -e "\n# github Identity\nHost 10.100.4.52\nHostName git.github.com\nIdentityFile $github_key" >> $HOME/.ssh/config
           chmod 644 $HOME/.ssh/config
-          ssh-add $bitbucket_key
-          echo "Please add $bitbucket_key.pub to the Access Keys for your user in"
-          echo "BitBucket https://git.github.com/admin/users/view?name=user.name"
-          echo -e "For convenience, printing the contents of $bitbucket_key.pub:\n"
+          ssh-add $github_key
+          echo "Please add $github_key.pub to the Access Keys for your user in"
+          echo "github https://git.github.com/admin/users/view?name=user.name"
+          echo -e "For convenience, printing the contents of $github_key.pub:\n"
           echo $LINE
-          echo $(cat $bitbucket_key.pub | awk '{print $1 $2}')
+          echo $(cat $github_key.pub | awk '{print $1 $2}')
           echo $LINE
           echo -e "\n\n"
         ;;
@@ -73,11 +73,11 @@ if grep -q $REPOADDR $HOME/.ssh/config
     esac
   fi
 
-if ! $(ssh-add -l | grep -q "$bitbucket_key")
+if ! $(ssh-add -l | grep -q "$github_key")
   then
   echo $COLORLINE
-  echo "$bitbucket_key missing from ssh-agent, adding"
-  ssh-add $bitbucket_key
+  echo "$github_key missing from ssh-agent, adding"
+  ssh-add $github_key
   echo $COLORLINE
 fi
 
@@ -85,7 +85,7 @@ fi
     then
     read -n 1 -p "No virtualbox install found - would you like to install via brew? (May take a while) [y/N]" VBINST
     case ${VBINST:0:1} in
-      y|Y ) 
+      y|Y )
         echo $COLORLINE
         echo -e "\nInstalling virtualbox"
         brew install Caskroom/cask/virtualbox
@@ -122,30 +122,31 @@ if !(vagrant plugin list | grep -q "vagrant-vbguest")
 fi
 
 # Check if the vagrant puppet install plugin is installed, and install it if it isn't
-if !(vagrant plugin list | grep -q "vagrant-puppet-install")
-then
-  echo $COLORLINE
-  echo -e "[38;5;226mInstalling puppet-install plugin for vagrant[0m"
-  vagrant plugin install vagrant-puppet-install
-  echo $COLORLINE
-fi
-
+# Re-evaluating whether the below is necessary, therefore commenting out [JG-2018/01/18]
+# if !(vagrant plugin list | grep -q "vagrant-puppet-install")
+# then
+#   echo $COLORLINE
+#   echo -e "[38;5;226mInstalling puppet-install plugin for vagrant[0m"
+#   vagrant plugin install vagrant-puppet-install
+#   echo $COLORLINE
+# fi
+#
 # Check if the centos/7 vagrant box is installed, if it's not, add it
-if !(vagrant box list | grep -q "centos/7")
-  then
-  echo $COLORLINE
-  echo -e "[38;5;226mInstalling centos/7 box for vagrant[0m"
-  vagrant box add centos/7 --provider=virtualbox
-  echo $COLORLINE
-fi
+# if !(vagrant box list | grep -q "centos/7")
+#   then
+#   echo $COLORLINE
+#   echo -e "[38;5;226mInstalling centos/7 box for vagrant[0m"
+#   vagrant box add centos/7 --provider=virtualbox
+#   echo $COLORLINE
+# fi
 
 # Clone the portal repo
 if !(which -s git)
   then
-  echo -e "[38;5;226mNo git install found - would you like to install it via brew? (May take a while) [y/N][0m" 
+  echo -e "[38;5;226mNo git install found - would you like to install it via brew? (May take a while) [y/N][0m"
   read -n 1 GITINST
   case ${GITINST:0:1} in
-    y|Y ) 
+    y|Y )
       echo $COLORLINE
       echo -e "[38;5;226mInstalling vagrant[0m"
       brew install git
@@ -158,9 +159,9 @@ fi
 
 if !(which -s npm)
   then
-  echo -e "[38;5;226mNo npm install found - would you like to install it via brew? (May take a while) [y/N][0m" NPMINST
+  echo -e "[38;5;226mNo nodejs/npm executables found - would you like to install it via brew? (May take a while) [y/N][0m" NPMINST
   case ${NPMINST:0:1} in
-    y|Y ) 
+    y|Y )
       echo $COLORLINE
       echo -e "[38;5;226mInstalling node.js and npm[0m"
       brew install node
@@ -171,32 +172,6 @@ if !(which -s npm)
   esac
 fi
 
-
-if !(find . -name "mercury-portal" | grep -q "merc")
-  then
-  echo $COLORLINE
-  echo -e "[38;5;226mRetrieving mercury repo[0m"
-  git clone ssh://git@git.github.com:7999/mc/mercury-portal.git
-  echo $COLORLINE
-fi
-
-# Install node modules
-cd mercury-portal
-
-# Use internal npm repository for installing npm packages
-export npm_config_registry="http://10.100.3.73/"
 echo $COLORLINE
-echo -e "[38;5;226mRunning npm install[0m"
-npm install
-echo $COLORLINE
-cd ..
-
-# Run vagrant up
-cd $DIR
-echo $COLORLINE
-echo -e "[38;5;226mRunning vagrant up[0m"
-vagrant up
-echo $COLORLINE
-echo -e "\n\n[95mYour dev machine is now up and running, you can reach the local instance of the portal at [4;95mhttp://127.0.0.1:$VGPORT[0m"
-echo -e "[38;5;226m(COMMAND+DoubleClick the URL on Mac to open in browser)[0m\n\n"
+echo -e "[1;49;32mScript complete![0m"
 echo $COLORLINE
